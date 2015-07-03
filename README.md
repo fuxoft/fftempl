@@ -1,1 +1,3 @@
-#fftempl
+#FFTempl
+
+Simple website templating using LuaJit.
