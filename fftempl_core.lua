@@ -194,6 +194,8 @@ local function main()
 
 		--FFTEMPL.log(tag.kind.." "..tag.orig.." "..tag.repl.." / ")
 		if kind == "lua" then
+			FFTEMPL.log(tag.orig)
+			FFTEMPL.log(tag.repl)
 			html = html:gsub(tag.orig, tag.repl)
 		else
 			assert (kind == "dumb", "Tag must be of kind 'lua' or 'dumb'")

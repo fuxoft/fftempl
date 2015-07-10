@@ -23,10 +23,11 @@ local function fftempl_main()
 
 	local function err_fun(errstat)
 		local tback = debug.traceback(errstat)
-		local start,msg,rest = tback:match("^(%S- )([^\n]*)(.+)$")
+--[[	local start,msg,rest = tback:match("^(%S- )([^\n]*)(.+)$")
 		if rest == rest then
 			tback = "<b>"..tostring(start) .. "<font color=red>"..tostring(msg).."</font></b>"..tostring(rest)
 		end
+	]]
 		return tback
 	end
 
