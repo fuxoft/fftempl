@@ -10,7 +10,7 @@ Available hooks (called in this order):
 variables:
 	FFTEMPL.fftempl_dir - WHere fftempl files reside (absolute path, readonly)
 	FFTEMPL.htm_dir - Directory of the currently executing HTM file (relative to fftempl directory)
-	FFTEMPL.htm_text - Contents of HTM film (readonly)
+	FFTEMPL.htm_text - Contents of HTM file (readonly)
 	FFTEMPL.http_status_code - Normally "200"
 	FFTEMPL.sections - Table of all HTM sections indexed by their ID
 	FFTEMPL.tags - Table of all replaceable tags indexed by their ID
