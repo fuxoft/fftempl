@@ -1,5 +1,7 @@
---FFTEMPL 20150619
+--FFTEMPL
 --fuka@fuxoft.cz
+
+-- [[[[*<= Version '20171215a' =>*]]]]
 
 --[[
 Available hooks (called in this order):
