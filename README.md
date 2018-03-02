@@ -2,7 +2,7 @@
 
 Extremely simple but extremely powerful website templating and server side scripting using LuaJIT and anything else you like (used on www.fuxoft.cz).
 
-Documentation version: [[*<= Version '20180302a' =>*]]
+Documentation version: [[*<= Version '20180302b' =>*]]
 
 Warning: If you are not already familiar with Lua language and/or if you don't run your own HTTP server on your own machine, it's highly unlikely you'll find FFTempl useful in any way.
 
@@ -151,7 +151,6 @@ The .htm file can begin with special --LUASCRIPT tag which allows you to include
 
 ```
 --LUASCRIPT
-
 FFTEMPL.add_lua_tag('%(days_age "(%d*)%.(%d*)%.(%d*)"%)', function (d,m,y)
 	--local d,m,y = string.match(str,"(%d*)%.(%d*)%.(%d*)")
 	local days = (os.time() - os.time{year=tonumber(y); month=tonumber(m); day=tonumber(d); hour = 6}) / (60*60*24)
