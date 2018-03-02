@@ -101,7 +101,7 @@ Hello World webpage
 HELLO WORLD!
 ```
 
-Parameters beginning with the underscore (_TEMPLATE, _EXTRATAGS, _CODE etc...) are hardcoded and have special meaning for FFTempl. Other parameters can have any names you desire. It's true that "TITLE" and "BODY" can remind you of similarly named HTML tags but they could be called for example "XYZZY" and "FROTZ" - it's entirely up to you how you name your parameters (except the predefined names beginning with underscores)!
+TODO No longer valid. Explain LUASCRIPT and hooks... (Parameters beginning with the underscore (_TEMPLATE, _EXTRATAGS, _CODE etc...) are hardcoded and have special meaning for FFTempl. Other parameters can have any names you desire. It's true that "TITLE" and "BODY" can remind you of similarly named HTML tags but they could be called for example "XYZZY" and "FROTZ" - it's entirely up to you how you name your parameters (except the predefined names beginning with underscores)!)
 
 Some parameters can appear more than once in the source file. These are called "multiparameters" and will be explained later.
 
