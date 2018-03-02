@@ -2,7 +2,7 @@
 
 Extremely simple but extremely powerful website templating and server side scripting using LuaJIT and anything else you like (used on www.fuxoft.cz).
 
-Documentation version: [[*<= Version '20180302b' =>*]]
+Documentation version: [[*<= Version '20180302c' =>*]]
 
 Warning: If you are not already familiar with Lua language and/or if you don't run your own HTTP server on your own machine, it's highly unlikely you'll find FFTempl useful in any way.
 
@@ -63,10 +63,10 @@ Then, you must configure the redirection of ".htm" file requests. Again, this ca
 ```
 RewriteEngine on
 RewriteBase /
-RewriteRule ^(.*\.htm)$ /fftempl/fftempl.cgi?file=$1 [PT,QSA]
+RewriteRule ^(.*\.htm)$ /fftempl/fftempl.cgi?fftempl_htm_file=$1 [PT,QSA]
 ```
 
-If you don't understand what this means or if you don't use Apache 2: The idea is that all .htm file requests should be automatically rewritten from ``/some_dir/some_file.htm?some_parameter=some_value`` to ``/fftempl/fftempl.cgi?file=/some_dir/some_file.htm&some_parameter=some_value``.
+If you don't understand what this means or if you don't use Apache 2: The idea is that all .htm file requests should be automatically rewritten from ``/some_dir/some_file.htm?some_parameter=some_value`` to ``/fftempl/fftempl.cgi?fftempl_htm_file=/some_dir/some_file.htm&some_parameter=some_value``.
 
 If subsequent visit of page ``some_random_nonexistent_name.htm`` (must end with ".htm"!) on your webserver displays FFTempl error message, congratulations! FFTempl is installed and you can start using it.
 
