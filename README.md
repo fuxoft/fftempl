@@ -101,17 +101,13 @@ Hello World webpage
 HELLO WORLD!
 ```
 
-TODO No longer valid. Explain LUASCRIPT and hooks... (Parameters beginning with the underscore (_TEMPLATE, _EXTRATAGS, _CODE etc...) are hardcoded and have special meaning for FFTempl. Other parameters can have any names you desire. It's true that "TITLE" and "BODY" can remind you of similarly named HTML tags but they could be called for example "XYZZY" and "FROTZ" - it's entirely up to you how you name your parameters (except the predefined names beginning with underscores)!)
-
-Some parameters can appear more than once in the source file. These are called "multiparameters" and will be explained later.
-
-As a next step, FFTempl loads the relevant template file. The template file is usually "fftempl/default.tpl" but this can be overriden by including parameter called _TEMPLATE in the source file.
+As a next step, FFTempl loads the relevant template file. The template file is usually "fftempl/default.tpl" but this can be overriden.
 
 The template files look almost like a HTML page. What FFTempl does now is that it takes the template and replaces all occurences of string "((paramname))" with the contents of parameter called paramname (from the original ".htm" source file). If the template file contains parameter which does not exist in the source file, it's silently discarded from the result.
 
 We now have something that resembles HTML page (let's call it "intermediate page") but we are not done yet.
 
-Now we load the relevant tag file from the disk. As was the case with the template file, tag file can be defined by parameter named _TAGS but if it's not present, "default.tag" file is used.
+Now we load the relevant tag file from the disk. As was the case with the template file, tag file can be defined by parameter named _TAGS but if it's not present, "fftempl/default.tag" file is used but this can be overridden.
 
 The tag file consists of lines which have the following format:
 
@@ -121,27 +117,25 @@ tag := replacement
 
 FFTempl now looks for all instances of each tag in the intermediate page and replaces each of them with the relevant replacement. Note that both tag and replacement can be anything at all and they don't have to be enclosed in parentheses. I used parentheses because they are easily accessed even when I am using the Czech keyboard. If you are working on U.S. keyboard you should probably use some less common delimiters like "" or "{}"... Or you don't have to use the delimiters at all and write something like StartOfBoldText, if you are bold. The choice is yours.
 
-If the tag contains a dollar sign ("$"), this dollar sign matches any string in the intermediate file. If replacement also contains dollar signs, all of them are appropriately replaced by the string that was originally used in the intermediate file. I know it sounds confusing but it's really simple. For example, let's assume your tag file contains the following line, defining the {mailto} tag:
+FFTempl also supports more complicated tags with parameters. Those use ":=!" instead of ":=". In this case, both "tag" and "replacement" are not simple string but search and replace strings according to Lua's ``string.match()`` format so __they have to be properly escaped__. For example, let's say you define the following tag:
 
 ```
-{mailto $} := <a href="mailto:$">$</a>
+%(mailto "(.-)"%) :=! (ahref "mailto:%1")%1(/a)
 ```
 
 Then, if you include the following text anywhere in your source file (or template - it doesn't matter because it appears in the intermediate file in both cases):
 
 ```
-My e-mail is {mailto satan@hell.sk}, write to me!
+My e-mail is (mailto satan@hell.sk), write to me!
 ```
 
 it gets automatically expanded to:
 
 ```
-My e-mail is <a href="mailto:satan@hell.sk">satan@hell.sk</a>, write to me!
+My e-mail is (ahref="mailto:satan@hell.sk")satan@hell.sk(/a), write to me!
 ```
 
-Note that the lines in ".tag" file are interpreted and replaced one by one, from top to bottom, and this order is very significant because it can be used for tags wrapped by other tags!
-
-Maybe you also noticed that some lines in the .tag file contain ":=!" instead of ":=". In these cases, the right string is not replacement string but the name of the Lua function which is invoked to get the value used for replacement (this is advanced stuff and you need to understand Lua to use it).
+Note that the lines in .tag file are interpreted and replaced one by one, from top to bottom, and this order is very significant because it can be used for tags wrapped by other tags. In the specific example above, there should be other lines in the .tag file (after this mailto line) that expand (ahref=...) to <a href=...>, (/a) to </a> etc.
 
 Now think for a little while about the possibilities all of this gives to you. However, there is lots more that FFTempl can do for you!
 
@@ -153,9 +147,30 @@ After you learn Lua (which is really very simple and elegant language), just loo
 
 Disabled, TODO Enable custom.lua - Also note the "custom.lua" file which gets automatically included during each FFTempl invocation and contains FFTempl modifications which should apply to all .htm pages on your site. The included "custom.lua" file is used on fuxoft.cz to create simple methods which you used to view the contents of source, template and tag files. Yes - this functionality is not hard-coded and you don't have to use the "custom.lua" file if you don't want to (you can modify it as you see fit or you can simply delete it).
 
-## _CODE and _EXTRATAGS special parameters
+## Arbitrary copmplex Lua code using LUASCRIPT tag
 
-TODO No longer valid, replace with LUASCRIPT explanation.
+The .htm file can begin with special --LUASCRIPT tag which allows you to include arbitrary Lua code right in the page source. The tag must be at the beginning of the file, before everything else. For example, the .htm file can begin like this:
+
+```
+--LUASCRIPT
+
+FFTEMPL.add_lua_tag('%(days_age "(%d*)%.(%d*)%.(%d*)"%)', function (d,m,y)
+	--local d,m,y = string.match(str,"(%d*)%.(%d*)%.(%d*)")
+	local days = (os.time() - os.time{year=tonumber(y); month=tonumber(m); day=tonumber(d); hour = 6}) / (60*60*24)
+	return tostring(math.floor(days+0.5))
+end)
+
+--/LUASCRIPT
+((TITLE))
+Frantisek Fuka - Homepage
+...etc...
+```
+
+The LuaJIT code between the two LUASCRIPT tags (which must look exactly like in this example) is executed and can add tags, execution hooks and do lots of other stuff (even including and executing other separate .lua files).
+
+The specific example above adds a dynamic tag that expands ```(days_age "12.31.1980")``` (in source or template file) into an integer that corresponds to number of days elapsed since December 31, 1980.
+
+The LUASCRIPT code is called as soon as possible, before all other parsing, so it can override the tag file, the template file, change the content-type, set cookies, etc... Have a look at the fftempl_core.lua source.
 
 ## Double dash parameter masking
 
