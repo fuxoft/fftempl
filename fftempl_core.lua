@@ -1,7 +1,7 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
--- [[[[*<= Version '20180302a' =>*]]]]
+_G.FFTEMPL.version.core = string.match([[*<= Version '20180302a' =>*]], "'.+'")
 
 --[[
 Available hooks (called in this order):
@@ -196,8 +196,8 @@ local function main()
 
 		--FFTEMPL.log(tag.kind.." "..tag.orig.." "..tag.repl.." / ")
 		if kind == "lua" then
-			FFTEMPL.log(tag.orig)
-			FFTEMPL.log(tag.repl)
+			--FFTEMPL.log(tag.orig)
+			--FFTEMPL.log(tag.repl)
 			html = html:gsub(tag.orig, tag.repl)
 		else
 			assert (kind == "dumb", "Tag must be of kind 'lua' or 'dumb'")

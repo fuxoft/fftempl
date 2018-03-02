@@ -1,10 +1,13 @@
 #!/usr/bin/env luajit
 
+_G.FFTEMPL = {version = {}, debug = {log={}}}
+
 --FFTempl
 --by Frantisek Fuka
---v2015.06.15
 --This is FFTempl loader which must never fail
-_G.FFTEMPL = {debug = {log={}}}
+--[[*<= Version '20180302a' =>*]]
+_G.FFTEMPL.version.loader = string.match([[*<= Version '20140302b' =>*]], "'.+'")
+
 FFTEMPL.fftempl_dir = "/home/fuxoft/work/web/fuxoft.cz/fftempl/"
 
 function FFTEMPL.log(str)
