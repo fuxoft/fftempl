@@ -145,8 +145,6 @@ If you want to create dynamic content like, you need to learn Lua. The reasons I
 
 After you learn Lua (which is really very simple and elegant language), just look at the main two FFTempl files: "fftempl.cgi" and "fftempl_core.lua". They contain all the functionality of FFTempl in just a few kilobytes of Lua code and you can see what other mechanisms FFTempl allows. For example, what exactly happens if someone requests non-existent .htm page.
 
-Disabled, TODO Enable custom.lua - Also note the "custom.lua" file which gets automatically included during each FFTempl invocation and contains FFTempl modifications which should apply to all .htm pages on your site. The included "custom.lua" file is used on fuxoft.cz to create simple methods which you used to view the contents of source, template and tag files. Yes - this functionality is not hard-coded and you don't have to use the "custom.lua" file if you don't want to (you can modify it as you see fit or you can simply delete it).
-
 ## Arbitrary copmplex Lua code using LUASCRIPT tag
 
 The .htm file can begin with special --LUASCRIPT tag which allows you to include arbitrary Lua code right in the page source. The tag must be at the beginning of the file, before everything else. For example, the .htm file can begin like this:
