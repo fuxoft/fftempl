@@ -1,7 +1,7 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
--- [[[[*<= Version '20171215a' =>*]]]]
+-- [[[[*<= Version '20180302a' =>*]]]]
 
 --[[
 Available hooks (called in this order):
@@ -144,7 +144,7 @@ local function main()
 			prev.finish = pos1 - 2
 		end
 	end
-	assert(#sections0 > 0, "No sections found in HTM file")
+	assert(#sections0 > 0, "No sections found in HTM file. This is not a fftempl file.")
 	sections0[#sections0].finish = #htm_text
 
 	local sections = {}
