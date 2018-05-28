@@ -74,7 +74,7 @@ For increased security, you can change the name of the directory from "fftempl" 
 
 ## Basic Terminology
 
-Each page FFTempl generates is created from on its source file, template file and tag file.
+Each page FFTempl generates is created from its source file, template file and tag file.
 
 Source files contain the actual dynamic content of the page. Source files have the ".htm" extension and can be located anywhere on your website (even inside the "fftempl" directory!). Source files can also contain page-specific Lua scripts which are to be executed.
 
@@ -107,7 +107,7 @@ The template files look almost like a HTML page. What FFTempl does now is that i
 
 We now have something that resembles HTML page (let's call it "intermediate page") but we are not done yet.
 
-Now we load the relevant tag file from the disk. As was the case with the template file, tag file can be defined by parameter named _TAGS but if it's not present, "fftempl/default.tag" file is used but this can be overridden.
+Now we load the relevant tag file from the disk. As was the case with the template file, tag file can be overriden on a file-by-file basis using the LuaJIT variable FFTEMPL.tags_filename but if it's not present, "fftempl/default.tag" file is used by default.
 
 The tag file consists of lines which have the following format:
 
@@ -126,7 +126,7 @@ FFTempl also supports more complicated tags with parameters. Those use ":=!" ins
 Then, if you include the following text anywhere in your source file (or template - it doesn't matter because it appears in the intermediate file in both cases):
 
 ```
-My e-mail is (mailto satan@hell.sk), write to me!
+My e-mail is (mailto "satan@hell.sk"), write to me!
 ```
 
 it gets automatically expanded to:
@@ -135,13 +135,13 @@ it gets automatically expanded to:
 My e-mail is (ahref="mailto:satan@hell.sk")satan@hell.sk(/a), write to me!
 ```
 
-Note that the lines in .tag file are interpreted and replaced one by one, from top to bottom, and this order is very significant because it can be used for tags wrapped by other tags. In the specific example above, there should be other lines in the .tag file (after this mailto line) that expand (ahref=...) to <a href=...>, (/a) to </a> etc.
+Note that the lines in .tag file are interpreted and replaced one by one, from top to bottom, and this order is very significant because it can be used for tags wrapped by other tags. In the specific example above, there should be other lines in the .tag file (after this mailto line) that expand (ahref=...) to <a href=...>, (/a) to </a> etc., so that the result is actual valid HTML.
 
 Now think for a little while about the possibilities all of this gives to you. However, there is lots more that FFTempl can do for you!
 
 ## Advanced usage
 
-If you want to create dynamic content like, you need to learn Lua. The reasons I rewrote FFTempl from Ruby to Lua were Lua's great speed, small footprint and the fact that Lua scripts are easily "hackable" and modifiable during the runtine which is very useful in FFTempl.
+If you want to create dynamic content, you need to learn Lua. The reasons I rewrote FFTempl from Ruby to Lua were Lua's great speed, small footprint and the fact that Lua scripts are easily "hackable" and modifiable during the runtine (i.e. scripts modifying themselves) which is very useful in FFTempl.
 
 After you learn Lua (which is really very simple and elegant language), just look at the main two FFTempl files: "fftempl.cgi" and "fftempl_core.lua". They contain all the functionality of FFTempl in just a few kilobytes of Lua code and you can see what other mechanisms FFTempl allows. For example, what exactly happens if someone requests non-existent .htm page.
 
@@ -152,22 +152,20 @@ The .htm file can begin with special --LUASCRIPT tag which allows you to include
 ```
 --LUASCRIPT
 FFTEMPL.add_lua_tag('%(days_age "(%d*)%.(%d*)%.(%d*)"%)', function (d,m,y)
-	--local d,m,y = string.match(str,"(%d*)%.(%d*)%.(%d*)")
 	local days = (os.time() - os.time{year=tonumber(y); month=tonumber(m); day=tonumber(d); hour = 6}) / (60*60*24)
 	return tostring(math.floor(days+0.5))
 end)
-
 --/LUASCRIPT
 ((TITLE))
-Frantisek Fuka - Homepage
+My Homepage
+((BODY))
+I was born on January 20, 1980, so today I am exactly (days_age "20.1.1980") days old!
 ...etc...
 ```
 
 The LuaJIT code between the two LUASCRIPT tags (which must look exactly like in this example) is executed and can add tags, execution hooks and do lots of other stuff (even including and executing other separate .lua files).
 
-The specific example above adds a dynamic tag that expands ```(days_age "12.31.1980")``` (in source or template file) into an integer that corresponds to number of days elapsed since December 31, 1980.
-
-The LUASCRIPT code is called as soon as possible, before all other parsing, so it can override the tag file, the template file, change the content-type, set cookies, etc... Have a look at the fftempl_core.lua source.
+The LUASCRIPT code is called as soon as possible, before all other parsing, so it can override the tag file, the template file, change the content-type of the HTTP response, set and read the cookies, etc... Have a look at the fftempl_core.lua source.
 
 ## Double dash parameter masking
 
@@ -185,4 +183,4 @@ This is probably the right time to stress that FFTempl has no status persistence
 
 The speed (all scripts have to be compiled from scratch for each request) also doesn't seem to be a problem even on our old server. However, to lower the system load under critical conditions, you could use luac to pre-compile "fftempl.lua" and "custom.lua" files (see Lua documentation).
 
-The only drawback is the fact that lack of persistence prohibits you from having for example some global page visit counter. However, even this can be done in FFTempl - you just have to store the dynamic data somewhere on disk (beware of the right permissions) or call some database from your FFTempl script using ``os.execute()`` or ``os.popen()``. ALso, your scripts can set and use cookies, of course.
+The only drawback is the fact that lack of persistence prohibits you from having for example some global page visit counter. However, even this can be done in FFTempl - you just have to store the dynamic data somewhere on disk (beware of the right permissions) or call some database from your FFTempl script using ``os.execute()`` or ``os.popen()``. Also, your scripts can set and use cookies, of course.
