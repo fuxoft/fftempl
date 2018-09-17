@@ -171,7 +171,7 @@ The LUASCRIPT code is called as soon as possible, before all other parsing, so i
 
 This scary name hides rather simple feature: Whenever the web client asks fftempl for a page which is named ``foo--bar.htm`` (contains double dash), this name is automagically and transparently changed to ``foo.htm?_dash_argument=bar``. What use is this? The easiest way to explain is to look at http://fuxoft.cz/redmeat/. You see dozens of links on that page, which seem to point to dozens of different static pages, each of which contains a comic strip. In fact, all strips are displayed using the same .htm source page called "strip.htm". For example, the URL ``/redmeat/strip--zoo.jpg.htm`` is automatically expanded to ``/redmeat/strip.htm?_dash_argument=zoo.jpg``. The "strip.htm" page just looks at what's in the variable args._dash_argument and displays the specific image file.
 
-(By the way, the "args" Lua table always contains all GET arguments of the current HTTP request available for your perusal.)
+(By the way, the "FFTEMPL.args" Lua table always contains all GET arguments of the current HTTP request available for your perusal.)
 
 Are you still asking what's this good for? It allows your parametrized dynamic pages to look as if they were static pages. That means they can be better indexed by search engines, for example, or mirrored by download programs.
 
