@@ -135,7 +135,7 @@ it gets automatically expanded to:
 My e-mail is (ahref="mailto:satan@hell.sk")satan@hell.sk(/a), write to me!
 ```
 
-Note that the lines in .tag file are interpreted and replaced one by one, from top to bottom, and this order is very significant because it can be used for tags wrapped by other tags. In the specific example above, there should be other lines in the .tag file (after this mailto line) that expand (ahref=...) to &lt;a href=...>, (/a) to %lt;/a> etc., so that the result is actual valid HTML.
+Note that the lines in .tag file are interpreted and replaced one by one, from top to bottom, and this order is very significant because it can be used for tags wrapped by other tags. In the specific example above, there should be other lines in the .tag file (after this mailto line) that expand (ahref=...) to &lt;a href=...>, (/a) to &lt;/a> etc., so that the result is actual valid HTML.
 
 Now think for a little while about the possibilities all of this gives to you. However, there is lots more that FFTempl can do for you!
 
