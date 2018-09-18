@@ -5,13 +5,17 @@ _G.FFTEMPL = {version = {}, debug = {log={}}}
 --FFTempl
 --by Frantisek Fuka
 --This is FFTempl loader which must never fail
---[[*<= Version '20180302a' =>*]]
+--[[*<= Version '20180918a' =>*]]
 _G.FFTEMPL.version.loader = string.match([[*<= Version '20140302b' =>*]], "'.+'")
-
-FFTEMPL.fftempl_dir = "/home/fuxoft/work/web/fuxoft.cz/fftempl/"
 
 function FFTEMPL.log(str)
 	table.insert(FFTEMPL.debug.log, tostring(str))
+end
+
+local function fftempl_init()
+	local sfn = assert(os.getenv("SCRIPT_FILENAME"), "Cannot get $SCRIPT_FILENAME")
+	local fftd = assert(sfn:match("^(.+)fftempl%.cgi$"), "Cannot extract base path")
+	FFTEMPL.fftempl_dir = fftd
 end
 
 local function fftempl_main()
@@ -60,4 +64,5 @@ local function fftempl_main()
 	end
 end
 
+fftempl_init()
 fftempl_main()

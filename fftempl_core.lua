@@ -1,7 +1,7 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
-_G.FFTEMPL.version.core = string.match([[*<= Version '20180302a' =>*]], "'.+'")
+_G.FFTEMPL.version.core = string.match([[*<= Version '20180918a' =>*]], "'.+'")
 
 --[[
 Available hooks (called in this order):
@@ -10,11 +10,13 @@ Available hooks (called in this order):
 	FFTEMPL.hooks.html - HTML is done and is stored in FFTEMPL.html
 
 variables:
-	FFTEMPL.fftempl_dir - WHere fftempl files reside (absolute path, readonly)
+	FFTEMPL.fftempl_dir - Where fftempl files reside (absolute path, readonly)
 	FFTEMPL.htm_dir - Directory of the currently executing HTM file (relative to fftempl directory)
 	FFTEMPL.htm_text - Contents of HTM file (readonly)
 	FFTEMPL.http_status_code - Normally "200"
+	FFTEMPL.parse_args(string) - Can be called to parse POST arguments, e.g. FFTEMPL.parse_args(FFTEMPL.stdin)
 	FFTEMPL.sections - Table of all HTM sections indexed by their ID
+	FFTEMPL.stdin - stdin from server (for POST request parsing)
 	FFTEMPL.tags - Table of all replaceable tags indexed by their ID
 	FFTEMPL.tags_filename - Filename from where to get tags file (default = "default.tag" in fftempl dir)
 	FFTEMPL.template_filename - Filename from where to get template (default = "default.tpl" in fftempl dir)
@@ -26,9 +28,13 @@ API calls:
 
 local function main()
 
-	local function parse_args(str)
+	local stdin = io.read("*a")
+	FFTEMPL.stdin = stdin
+
+	FFTEMPL.parse_args = function(str)
 	--Parse the arguments in URL request, e.g. 'foo=hello&bar=69'
 	--All values are parsed as strings
+	--This is very basic, and does not work correctly for non-trivial values (e.g. space, non-ascii chars)!
 	local args={}
 		local str0 = str:match("^(.-)#") or str
 		for key, value in string.gmatch(str0..'&','([_%w]-)=(.-)&') do
@@ -82,22 +88,23 @@ local function main()
 	local query_string=assert(os.getenv('QUERY_STRING'),'Unable to get QUERY_STRING from environment')
 	FFTEMPL.http_status_code = "200"
 	FFTEMPL.content_type = "text/html; charset=UTF-8"
-	FFTEMPL.args = parse_args(query_string)
-	local htm_filename = assert(FFTEMPL.args.fftempl_htm_file, "No fftempl_htm_file specified")
-
-	assert(not htm_filename:match("%.%."), "Stop doing that")
+	local origURL = assert(os.getenv("REDIRECT_URL"), "Cannot get $REDIRECT_URL")
+	local droot = assert(os.getenv("DOCUMENT_ROOT"), "Cannot get $DOCUMENT_ROOT")
+	FFTEMPL.args = FFTEMPL.parse_args(query_string)
+	--error(FFTEMPL.args.fftempl_htm_file)
 
 	--extra parameter in file name?
 	--No FFTEMPL.log("htm_filename = "..htm_filename)
-	local fname, param = htm_filename:match("^(.-)%-%-(.*)%.htm$")
+	local fname, param = origURL:match("^(.+)%-%-(.-)%.htm$")
 	--FFTEMPL.log("fname = "..tostring(fname))
 	--FFTEMPL.log("param = "..tostring(param))
-	if fname and param then
-		htm_filename = fname .. ".htm"
+	if fname and param and not param:match("/") then
+		origURL = fname .. ".htm"
 		FFTEMPL.args._dash_argument = param
 	end
 
-	local htm_full_path = "../"..htm_filename
+	local htm_full_path = droot..origURL
+	assert(not htm_full_path:match("%.%."), "Stop doing that")
 	FFTEMPL.htm_dir = get_dir(htm_full_path)
 	local htm_text = readfile(htm_full_path)
 

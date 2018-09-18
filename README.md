@@ -2,7 +2,7 @@
 
 Extremely simple but extremely powerful website templating and server side scripting using LuaJIT and anything else you like (used on www.fuxoft.cz).
 
-Documentation version: [[*<= Version '20180302c' =>*]]
+Documentation version: [[*<= Version '20180918a' =>*]]
 
 Warning: If you are not already familiar with Lua language and/or if you don't run your own HTTP server on your own machine, it's highly unlikely you'll find FFTempl useful in any way.
 
@@ -10,7 +10,7 @@ Warning: If you are not already familiar with Lua language and/or if you don't r
 
 FFTempl allows you to have (almost) absolute freedom in mixing dynamic and static content using various templates and scripts, without need for any database. You only need LuaJIT installed (available as package in Ubuntu and Debian) and a sensible webserver that allows for CGI execution and URL rewriting. The core FFTempl system is (like Lua itself) extremely simple but allows you to expand its possibilities almost limitlessly.
 
-FFTempl was tested using Apache 2 on Linux, I have no idea if and how it works under different servers / OSes (it probably won't without some tweaking because it uses ``os.getenv('QUERY_STRING')`` to get the URL parameters from Apache).
+FFTempl was tested using Apache 2 on Linux, I have no idea if and how it works under different servers / OSes (it probably won't without some tweaking because it uses ``os.getenv()`` extensively).
 
 I made FFTempl to satisfy my needs which are probably different from what you need. If you find it useful, great. If you don't, please use one of many other dynamic content systems that are freely available. It's probably meaningless to ask me to "implement this or that" in FFTempl because you can implement almost everything yourself, using hooks, without changing the core system. But I am open to suggestions.
 
@@ -63,7 +63,7 @@ Then, you must configure the redirection of ".htm" file requests. Again, this ca
 ```
 RewriteEngine on
 RewriteBase /
-RewriteRule ^(.*\.htm)$ /fftempl/fftempl.cgi?fftempl_htm_file=$1 [PT,QSA]
+RewriteRule ^(.*\.htm)$ /fftempl/fftempl.cgi [PT,QSA]
 ```
 
 If you don't understand what this means or if you don't use Apache 2: The idea is that all .htm file requests should be automatically rewritten from ``/some_dir/some_file.htm?some_parameter=some_value`` to ``/fftempl/fftempl.cgi?fftempl_htm_file=/some_dir/some_file.htm&some_parameter=some_value``.
@@ -171,11 +171,11 @@ The LUASCRIPT code is called as soon as possible, before all other parsing, so i
 
 This scary name hides rather simple feature: Whenever the web client asks fftempl for a page which is named ``foo--bar.htm`` (contains double dash), this name is automagically and transparently changed to ``foo.htm?_dash_argument=bar``. What use is this? The easiest way to explain is to look at http://fuxoft.cz/redmeat/. You see dozens of links on that page, which seem to point to dozens of different static pages, each of which contains a comic strip. In fact, all strips are displayed using the same .htm source page called "strip.htm". For example, the URL ``/redmeat/strip--zoo.jpg.htm`` is automatically expanded to ``/redmeat/strip.htm?_dash_argument=zoo.jpg``. The "strip.htm" page just looks at what's in the variable args._dash_argument and displays the specific image file.
 
-(By the way, the "FFTEMPL.args" Lua table always contains all GET arguments of the current HTTP request available for your perusal.)
+By the way, the "FFTEMPL.args" Lua table always contains all GET arguments of the current HTTP request available for your perusal. POST arguments can be parsed later manually. See the comments if fftempl_core.lua.
 
 Are you still asking what's this good for? It allows your parametrized dynamic pages to look as if they were static pages. That means they can be better indexed by search engines, for example, or mirrored by download programs.
 
-Note that the part before the (first) "--" is non-greedy, i.e. the URL ``/foo--bar--baz.htm`` gets replaced by ``/foo.htm?_dash_argument=bar--baz``. Also note that you probably encounter horrible problems if your site contains any .htm files whose name contains "--" (that was the reason why I chose this rather unusual combination, which is hardcoded into FFTempl).
+Note that you probably encounter horrible problems if your site contains any .htm files whose name contains "--" (that was the reason why I chose this rather unusual combination, which is hardcoded into FFTempl).
 
 ## Persistence and speed
 

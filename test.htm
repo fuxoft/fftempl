@@ -1,0 +1,35 @@
+--LUASCRIPT
+
+local result = {}
+local function prt(str)
+	table.insert(result, str.."\n")
+end
+
+local function exe(com)
+    local fd = io.popen(com)
+    local out = fd:read("*a")
+    fd:close()
+    prt ("\n--- Executing: "..com.."\n")
+    return out
+end
+
+prt("$SCRIPT_FILENAME = "..tostring(os.getenv("SCRIPT_FILENAME")))
+prt("stdin="..FFTEMPL.stdin.."("..#FFTEMPL.stdin.." chars)")
+prt(exe("whoami"))
+prt(exe("ls -al"))
+prt(exe("export"))
+
+FFTEMPL.add_dumb_tag("CONTENT", table.concat(result))
+--/LUASCRIPT
+((TITLE))
+FFTempl test
+((BODY))
+FFtempl test:
+<pre>
+CONTENT
+</pre>
+<form action="test.htm" method="post">
+	First name: <input type="text" name="fname" value="fname_val"><br>
+	Last name: <input type="text" name="lname" value="lname_val"><br>
+	<input type="submit" value="Submit">
+</form>
