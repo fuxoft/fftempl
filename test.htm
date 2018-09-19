@@ -14,6 +14,7 @@ local function exe(com)
 end
 
 prt("$SCRIPT_FILENAME = "..tostring(os.getenv("SCRIPT_FILENAME")))
+prt("args.get="..tostring(FFTEMPL.args.get))
 prt("stdin="..FFTEMPL.stdin.."("..#FFTEMPL.stdin.." chars)")
 prt(exe("whoami"))
 prt(exe("ls -al"))

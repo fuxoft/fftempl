@@ -5,8 +5,7 @@ _G.FFTEMPL = {version = {}, debug = {log={}}}
 --FFTempl
 --by Frantisek Fuka
 --This is FFTempl loader which must never fail
---[[*<= Version '20180918a' =>*]]
-_G.FFTEMPL.version.loader = string.match([[*<= Version '20140302b' =>*]], "'.+'")
+_G.FFTEMPL.version.loader = string.match([[*<= Version '20180919a' =>*]], "'(.+)'")
 
 function FFTEMPL.log(str)
 	table.insert(FFTEMPL.debug.log, tostring(str))

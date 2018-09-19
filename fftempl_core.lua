@@ -1,7 +1,7 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
-_G.FFTEMPL.version.core = string.match([[*<= Version '20180918a' =>*]], "'.+'")
+_G.FFTEMPL.version.core = string.match([[*<= Version '20180919a' =>*]], "'.+'")
 
 --[[
 Available hooks (called in this order):
@@ -34,10 +34,14 @@ local function main()
 	FFTEMPL.parse_args = function(str)
 	--Parse the arguments in URL request, e.g. 'foo=hello&bar=69'
 	--All values are parsed as strings
-	--This is very basic, and does not work correctly for non-trivial values (e.g. space, non-ascii chars)!
+	--This is very basic and probably does not work correctly for non-trivial values!
 	local args={}
 		local str0 = str:match("^(.-)#") or str
 		for key, value in string.gmatch(str0..'&','([_%w]-)=(.-)&') do
+			value = value:gsub("%+", " ")
+			value = value:gsub("(%%%x%x)", function(str)
+				return string.char(tonumber(str:match(".(..)"), 16))
+			end)
 			args[key] = value
 		end
 		return args
