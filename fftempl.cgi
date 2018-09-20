@@ -18,7 +18,6 @@ local function fftempl_init()
 end
 
 local function fftempl_main()
-
 	local function error_HTML(str)
 		local debugtext = table.concat(FFTEMPL.debug.log,"<p>\n")
 		if debugtext == "" then

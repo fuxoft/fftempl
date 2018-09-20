@@ -26,7 +26,7 @@ a:hover { color: #ff9900 }
 <body topmargin="2%" bottommargin="2%" leftmargin="3%" rightmargin="3%">
 (navigacnitabulka)
 ((BODY))
-<p>((POST))</p>
+((DISQUS))
 (navigacnitabulka)
 
 <script type="text/javascript">

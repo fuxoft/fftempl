@@ -11,7 +11,8 @@ Available hooks (called in this order):
 
 variables:
 	FFTEMPL.fftempl_dir - Where fftempl files reside (absolute path, readonly)
-	FFTEMPL.htm_dir - Directory of the currently executing HTM file (relative to fftempl directory)
+	FFTEMPL.htm_dir - Directory of the currently executing HTM file (relative to fftempl directory), ends with "/"
+	FFTEMPL.file_name - Name of the currently executing HTM file (without directory name)
 	FFTEMPL.htm_text - Contents of HTM file (readonly)
 	FFTEMPL.http_status_code - Normally "200"
 	FFTEMPL.parse_args(string) - Can be called to parse POST arguments, e.g. FFTEMPL.parse_args(FFTEMPL.stdin)
@@ -27,6 +28,14 @@ API calls:
 ]]
 
 local function main()
+	FFTEMPL.hooks = {}
+	math.randomseed(bit.bxor(tonumber(tostring({}):match("0x(.+)"),16), os.time())) --Thorough PRNG seeding
+	local incname = "custom.lua"
+	local fd = io.open(incname)
+	if fd then
+		fd:close()
+		dofile(incname)
+	end
 
 	local stdin = io.read("*a")
 	FFTEMPL.stdin = stdin
@@ -110,6 +119,7 @@ local function main()
 	local htm_full_path = droot..origURL
 	assert(not htm_full_path:match("%.%."), "Stop doing that")
 	FFTEMPL.htm_dir = get_dir(htm_full_path)
+	FFTEMPL.htm_file = htm_full_path:match(".+/(.-)$")
 	local htm_text = readfile(htm_full_path)
 
 	local file404 = "404error.htm"
@@ -130,8 +140,6 @@ local function main()
 	htm_text = htm_text:gsub("\r\n", "\n")
 	FFTEMPL.htm_text = htm_text
 	FFTEMPL.tags = {}
-
-	FFTEMPL.hooks = {}
 
 	--FFTEMPL.log(htm_text)
 

@@ -24,4 +24,3 @@
 %(aname "(.-)"%) :=! <a name="%1">
 (/a) := </a>
 (navigacnitabulka) := <p><div align="center"><table class="navtabulka"><tr><td><a href="/"><strong>FUXOFT.CZ</strong> - František Fuka</a> </td> <td style="text-align:right"> ><a href=/tvorba.htm>tvorba</a> ><a href=/faq.htm>f.a.q.</a> ><a href=/kontakt.htm>kontakt</a> ><a href=/english.htm><strong>ENGLISH</strong></a></td></tr></table></div></p>
--- ODDELANO DOCASNE ><a href=/odkazy.htm>odkazy</a>
