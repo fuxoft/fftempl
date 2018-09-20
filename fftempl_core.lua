@@ -1,7 +1,7 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
-_G.FFTEMPL.version.core = string.match([[*<= Version '20180919a' =>*]], "'.+'")
+_G.FFTEMPL.version.core = string.match([[*<= Version '20180921a' =>*]], "'.+'")
 
 --[[
 Available hooks (called in this order):
