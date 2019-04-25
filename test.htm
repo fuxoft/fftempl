@@ -16,6 +16,14 @@ end
 prt("$SCRIPT_FILENAME = "..tostring(os.getenv("SCRIPT_FILENAME")))
 prt("args.get="..tostring(FFTEMPL.args.get))
 prt("stdin="..FFTEMPL.stdin.."("..#FFTEMPL.stdin.." chars)")
+prt("_dash_argument="..tostring(FFTEMPL.args._dash_argument))
+prt("-- FFTEMPL values:")
+for k,v in pairs(FFTEMPL) do
+    local str = tostring(v)
+    if #str < 100 then
+        prt("FFTEMPL."..k.." = "..str)
+    end
+end
 prt(exe("whoami"))
 prt(exe("ls -al"))
 prt(exe("export"))

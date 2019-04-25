@@ -4,7 +4,7 @@
 <meta name="keywords" content="František Fuka, Fuxoft, Sinclair ZX Spectrum" />
 ((HEAD))
 <STYLE TYPE="text/css">
-@import url(http://fonts.googleapis.com/css?family=Open+Sans&subset=latin,latin-ext);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans&subset=latin,latin-ext);
 body { font-family: 'Open Sans'; color: #c6ff00; background-color: #001A66 }
 B { font-weight: normal; color:#ff9900 }
 I { font-weight: normal; color:#ffffff }

@@ -1,7 +1,7 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
-_G.FFTEMPL.version.core = string.match([[*<= Version '20180921a' =>*]], "'.+'")
+_G.FFTEMPL.version.core = string.match([[*<= Version '20190425a' =>*]], "'.+'")
 
 --[[
 Available hooks (called in this order):
@@ -10,9 +10,10 @@ Available hooks (called in this order):
 	FFTEMPL.hooks.html - HTML is done and is stored in FFTEMPL.html
 
 variables:
-	FFTEMPL.fftempl_dir - Where fftempl files reside (absolute path, readonly)
-	FFTEMPL.htm_dir - Directory of the currently executing HTM file (relative to fftempl directory), ends with "/"
-	FFTEMPL.file_name - Name of the currently executing HTM file (without directory name)
+	FFTEMPL.fftempl_dir - Where fftempl files reside (absolute path, readonly), ends with "/"
+	FFTEMPL.htm_dir - Full directory path (on disk) of the currently executing HTM file, ends with "/"
+	FFTEMPL.htm_file - Name of the currently executing HTM file (without directory name)
+	FFTEMPL.htm_url - The URL path of the .htm file. Without server name but including the opening forward slash. E.g. "/dir/dir2/file.htm"
 	FFTEMPL.htm_text - Contents of HTM file (readonly)
 	FFTEMPL.http_status_code - Normally "200"
 	FFTEMPL.parse_args(string) - Can be called to parse POST arguments, e.g. FFTEMPL.parse_args(FFTEMPL.stdin)
@@ -116,6 +117,7 @@ local function main()
 		FFTEMPL.args._dash_argument = param
 	end
 
+	FFTEMPL.htm_url = origURL
 	local htm_full_path = droot..origURL
 	assert(not htm_full_path:match("%.%."), "Stop doing that")
 	FFTEMPL.htm_dir = get_dir(htm_full_path)
