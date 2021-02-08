@@ -2,7 +2,7 @@
 
 Extremely simple but extremely powerful website templating and server side scripting using LuaJIT and anything else you like (used on www.fuxoft.cz).
 
-Documentation version: [[*<= Version '20180918a' =>*]]
+Documentation version: [[*<= Version '2.1.2+D20210208T210219' =>*]]
 
 Warning: If you are not already familiar with Lua language and/or if you don't run your own HTTP server on your own machine, it's highly unlikely you'll find FFTempl useful in any way.
 
