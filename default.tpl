@@ -6,7 +6,7 @@
 <STYLE TYPE="text/css">
 @import url(https://fonts.googleapis.com/css?family=Open+Sans&subset=latin,latin-ext);
 body { font-family: 'Open Sans'; color: #c6ff00; background-color: #001A66 }
-B { font-weight: normal; color:#ff9900 }
+B { font-weight: bold; color:#ff9900 }
 I { font-weight: normal; color:#ffffff }
 H1 { font-size: 150%; color: #ff9900; text-align: center; margin-top:0.2em; margin-bottom:0.2em }
 H2 { font-size: 120%; color: #ff9900 }
@@ -26,7 +26,6 @@ a:hover { color: #ff9900 }
 <body topmargin="2%" bottommargin="2%" leftmargin="3%" rightmargin="3%">
 (navigacnitabulka)
 ((BODY))
-((DISQUS))
 (navigacnitabulka)
 
 <script type="text/javascript">

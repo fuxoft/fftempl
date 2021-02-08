@@ -1,27 +1,31 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
-_G.FFTEMPL.version.core = string.match([[*<= Version '20190425a' =>*]], "'.+'")
+_G.FFTEMPL.version.core = string.match([[*<= Version '2.1.8+D20201213T102920' =>*]], "'.+'")
 
 --[[
 Available hooks (called in this order):
 	FFTEMPL.hooks.sections - HTM sections are loaded in FFTEMPL.sections
 	FFTEMPL.hooks.tags - Tags are parsed in FFTEMPL.tags
-	FFTEMPL.hooks.html - HTML is done and is stored in FFTEMPL.html
+	FFTEMPL.hooks.html - HTML is done and is stored in FFTEMPL.html (where it can be replaced with something completely different)
 
 variables:
-	FFTEMPL.fftempl_dir - Where fftempl files reside (absolute path, readonly), ends with "/"
-	FFTEMPL.htm_dir - Full directory path (on disk) of the currently executing HTM file, ends with "/"
+	FFTEMPL.args - Table of parsed GET arguments. Very basic functionality. No fancy parsing / un-escaping is taking place.
+	FFTEMPL.custom_dir - The full filesystem path (with ending slash) to the directory (relative to website root) where "default.tag", "default.tmp" and "custom.lua" script files are kept. READONLY - DO NOT MODIFY. Equal to FFTEMPL.document_root .. "/.fftempl/"
+	FFTEMPL.document_root - contains the document root, e.g. "/user/ada/www/myweb.com" - WITHOUT the ending forward slash
+	FFTEMPL.fftempl_dir - Where fftempl app files reside (absolute path, readonly), ends with "/"
+	FFTEMPL.htm_dir - Full path (on disk) to the directory of the currently executing HTM file. Ends with "/"
 	FFTEMPL.htm_file - Name of the currently executing HTM file (without directory name)
 	FFTEMPL.htm_url - The URL path of the .htm file. Without server name but including the opening forward slash. E.g. "/dir/dir2/file.htm"
 	FFTEMPL.htm_text - Contents of HTM file (readonly)
 	FFTEMPL.http_status_code - Normally "200"
-	FFTEMPL.parse_args(string) - Can be called to parse POST arguments, e.g. FFTEMPL.parse_args(FFTEMPL.stdin)
+	FFTEMPL.content_type - Normally "text/html; charset=UTF-8"
+	FFTEMPL.parse_args(string) - Can be called to parse POST arguments, e.g. FFTEMPL.parse_args(FFTEMPL.stdin). Very limited functionality!
 	FFTEMPL.sections - Table of all HTM sections indexed by their ID
 	FFTEMPL.stdin - stdin from server (for POST request parsing)
 	FFTEMPL.tags - Table of all replaceable tags indexed by their ID
-	FFTEMPL.tags_filename - Filename from where to get tags file (default = "default.tag" in fftempl dir)
-	FFTEMPL.template_filename - Filename from where to get template (default = "default.tpl" in fftempl dir)
+	FFTEMPL.tags_filename - Full path to file with tags for current page. Default = FFTEMPL.custom_dir.."default.tag"
+	FFTEMPL.template_filename - Full path to template file for current page. Default = FFTEMPL.custom_dir.."default.tpl"
 
 API calls:
 	FFTEMPL.add_dumb_tag(<tag>, <string or func>)
@@ -29,22 +33,10 @@ API calls:
 ]]
 
 local function main()
-	FFTEMPL.hooks = {}
-	math.randomseed(bit.bxor(tonumber(tostring({}):match("0x(.+)"),16), os.time())) --Thorough PRNG seeding
-	local incname = "custom.lua"
-	local fd = io.open(incname)
-	if fd then
-		fd:close()
-		dofile(incname)
-	end
-
-	local stdin = io.read("*a")
-	FFTEMPL.stdin = stdin
-
 	FFTEMPL.parse_args = function(str)
 	--Parse the arguments in URL request, e.g. 'foo=hello&bar=69'
 	--All values are parsed as strings
-	--This is very basic and probably does not work correctly for non-trivial values!
+	--This is very basic and does not work correctly for non-trivial values!
 	local args={}
 		local str0 = str:match("^(.-)#") or str
 		for key, value in string.gmatch(str0..'&','([_%w]-)=(.-)&') do
@@ -85,30 +77,58 @@ local function main()
 	end
 
 	function FFTEMPL.add_dumb_tag(tag, what)
-		assert(type(tag) == "string", "Tag must be string")
+		assert(type(tag) == "string", "Tag must be string, is "..tostring(tag))
 		local typ = type(what)
 		assert(typ == "function" or typ == "string", "Tag type is "..typ..", not string or function")
 		table.insert(FFTEMPL.tags, {kind = "dumb", orig = tag, repl = what})
 	end
 
 	function FFTEMPL.add_lua_tag(tag, what)
-		assert(type(tag) == "string", "Tag must be string")
+		assert(type(tag) == "string", "Tag must be string, is "..tostring(tag))
 		local typ = type(what)
 		assert(typ == "function" or typ == "string", "Tag type is "..typ..", not string or function")
 		table.insert(FFTEMPL.tags, {kind = "lua", orig = tag, repl = what})
 	end
 
 	------ HERE WE GO
-	local query_string=assert(os.getenv('QUERY_STRING'),'Unable to get QUERY_STRING from environment')
+	FFTEMPL.hooks = {}
+	math.randomseed(bit.bxor(tonumber(tostring({}):match("0x(.+)"),16), os.time())) --Thorough PRNG seeding
+	
+	local query_string=assert(os.getenv('QUERY_STRING'),'Cannot get $QUERY_STRING')
+	local droot = assert(os.getenv("DOCUMENT_ROOT"), "Cannot get $DOCUMENT_ROOT")
+	FFTEMPL.document_root = droot
+	FFTEMPL.custom_dir = FFTEMPL.document_root .. "/.fftempl/"
+	
+	--execute custom include file, if it exists
+	local incname = FFTEMPL.custom_dir.."custom.lua"
+	local fd = io.open(incname)
+	if fd then
+		fd:close()
+		dofile(incname)
+	end
+
+	local stdin = io.read("*a")
+	FFTEMPL.stdin = stdin
+
 	FFTEMPL.http_status_code = "200"
 	FFTEMPL.content_type = "text/html; charset=UTF-8"
-	local origURL = assert(os.getenv("REDIRECT_URL"), "Cannot get $REDIRECT_URL")
-	local droot = assert(os.getenv("DOCUMENT_ROOT"), "Cannot get $DOCUMENT_ROOT")
+	
+	--[[local fd = io.popen('export')
+	local exp = fd:read("*a")
+	fd:close()
+	FFTEMPL.log("<pre>"..exp.."</pre>")
+	]]
+
+	local origURL = os.getenv("REDIRECT_URL")
 	FFTEMPL.args = FFTEMPL.parse_args(query_string)
 	--error(FFTEMPL.args.fftempl_htm_file)
 
 	--extra parameter in file name?
 	--No FFTEMPL.log("htm_filename = "..htm_filename)
+
+	if not origURL then --no REDIRECT_URL, we are running through nginx + FCGI
+		origURL = assert(os.getenv("SCRIPT_NAME"), "Cannot get $DOCUMENT_ROOT or $SCRIPT_NAME")
+	end
 	local fname, param = origURL:match("^(.+)%-%-(.-)%.htm$")
 	--FFTEMPL.log("fname = "..tostring(fname))
 	--FFTEMPL.log("param = "..tostring(param))
@@ -127,13 +147,13 @@ local function main()
 	local file404 = "404error.htm"
 
 	if not htm_text then --Cannot read the HTM file
-		--look for 404 fire in the current dir
+		--look for 404 file in the current dir
 		FFTEMPL.http_status_code = "404"
 		htm_text = readfile(FFTEMPL.htm_dir..file404)
 		if not htm_text then --Not found in current dir, look for it in root dir
-			htm_text = readfile("../"..file404)
+			htm_text = readfile(FFTEMPL.document_root.."/"..file404)
 			if not htm_text then
-				error("File "..htm.." not found, "..file404.." file also not found")
+				error("File "..htm_full_path.." not found, "..file404.." file also not found")
 			end
 		end
 	end
@@ -176,9 +196,8 @@ local function main()
 	FFTEMPL.sections = sections
 	call_hook("sections")
 
-	FFTEMPL.template_filename = FFTEMPL.template_filename or "default.tpl"
-	local tpl_txt = readfile(FFTEMPL.template_filename)
-	assert(tpl_txt, "Cannot read template file "..FFTEMPL.template_filename)
+	FFTEMPL.template_filename = FFTEMPL.template_filename or (FFTEMPL.custom_dir.."default.tpl")
+	local tpl_txt = readfile(FFTEMPL.template_filename) or "<html><title>FFTEMPL</title><body>FFTEMPL is installed and works but your default template is missing (usually in /.fftempl/default.tpl)</body></html>"
 
 	for k, v in pairs(FFTEMPL.sections) do
 		local escaped = v:gsub("%%", "%%%%") --Prevent "%1, %2..." expansion
@@ -188,9 +207,9 @@ local function main()
 	--Remove unmatched section markers
 	local html = tpl_txt:gsub("%(%([%dA-Z_]+%)%)","")
 
-	FFTEMPL.tags_filename = FFTEMPL.tags_filename or "default.tag"
+	FFTEMPL.tags_filename = FFTEMPL.tags_filename or (FFTEMPL.custom_dir .. "default.tag")
 
-	local tag_txt = readfile(FFTEMPL.tags_filename)
+	local tag_txt = readfile(FFTEMPL.tags_filename) or ""
 	assert(tag_txt, "Cannot read tags file "..FFTEMPL.tags_filename)
 	for row in (tag_txt.."\n"):gmatch("(.-)\n") do
 		if #row > 3 and (not row:match("^%-%-")) then

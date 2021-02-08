@@ -38,10 +38,10 @@ local function fftempl_main()
 
 	local function doit()
 		local result = dofile("fftempl_core.lua")
-		assert(type(result)=="table", "Result is not table")
-		assert(result.html, "Missing .html")
-		assert(result.content_type, "Missing .content_type")
-		assert(result.http_status_code,"Missing .http_status_code")
+		assert(type(result)=="table", "Result is not a table")
+		assert(result.html, "Missing .html content in result")
+		assert(result.content_type, "Missing .content_type in result")
+		assert(result.http_status_code,"Missing .http_status_code in result")
 		return result
 	end
 
