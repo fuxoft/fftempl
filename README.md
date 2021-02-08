@@ -16,13 +16,13 @@ I made FFTempl to satisfy my needs which are probably different from what you ne
 
 ## What FFTempl allows you to do
 
-Your whole HTML site is stored as static files in any directory structure you deem necessary (as if you used normal static webpages). FFTempl itself and template files are all stored in a single directory called called ``fftempl/`` in your website root directory. The name of this directory can be changed (see below).
+Your whole HTML site is stored as static files in any directory structure you deem necessary (as if you used normal static webpages). FFTempl itself and template files are all stored in a single directory called called ``.fftempl/`` in your website root directory. The name of this directory can be changed (see below).
 
 The most important principle of FFTempl operation is as follows: FFTempl is only concerned with files that have ".htm" extension and leaves all other files alone. That means you can have .php or .html (yes, ".html" is something different than ".htm") or .gif or .swf files on your website and FFTempl does not care about them at all - how they are handled depends on your webserver configuration only and has nothing to do with FFTempl. Note that FFTempl is perfectly capable of generating dynamic .gif or .swf files (or any other files to be delivered by your webserver) but the scripts that generate them must have the .htm extension (and correctly set the content-type for the generated file).
 
 FFTempl springs into action every time a file with ".htm" extension is requested. If someone requests file called ``/dir1/dir2/page.htm`` from your webserver, this request is redirected to FFTempl, which loads this file from disk (this is not a HTML file but "FFTempl source file", explained later), parses it and returns the result to the webbrowser which asked for it. "Parsing the file" means that template, tags and/or scripts are applied to the file. You can do almost anything, including incorporating the results of arbitrary OS commands into your pages. Thanks to templates and tags, it's very easy to make different parts of your website available in different designs and layouts, each of which only has to be defined once to immediately propagate the changes to whole site. To a casual visitor, your website looks like it consists only of static HTM pages (unless you want it to look like dynamically generated website).
 
-Once more: The directory structure is entirely up to you (except for the required ``fftempl/`` directory). The only rule is that if something has to be dynamic or use templates, it has to have the ".htm" extension. Other files are not altered by FFTempl in any way. Note that all your normal webserver configuration is still in effect for all files.
+Once more: The directory structure is entirely up to you (except for the required ``.fftempl/`` directory). The only rule is that if something has to be dynamic or use templates, it has to have the ".htm" extension. Other files are not altered by FFTempl in any way. Note that all your normal webserver configuration is still in effect for all files.
 
 ## What FFTempl does NOT allow you to do
 
@@ -49,7 +49,7 @@ Check that you have LuaJIT installed (command ``luajit`` should work).
 
 The following instructions are written with Apache 2 in mind:
 
-Run your webserver (if not already running), open your favorite web browser and point it to "http://yourServerDomain.com/fftempl/fftempl.cgi". You should see the output of running the script fftempl.cgi but you probably won't see it at the first try. That's because you don't have your webserver configured to execute this script. In Apache, this can be done for example by adding the following lines to your httpd.conf:
+Run your webserver (if not already running), open your favorite web browser and point it to "http://yourServerDomain.com/.fftempl/fftempl.cgi". You should see the output of running the script fftempl.cgi but you probably won't see it at the first try. That's because you don't have your webserver configured to execute this script. In Apache, this can be done for example by adding the following lines to your httpd.conf:
 
 ```
 AddHandler cgi-script .cgi
@@ -63,10 +63,10 @@ Then, you must configure the redirection of ".htm" file requests. Again, this ca
 ```
 RewriteEngine on
 RewriteBase /
-RewriteRule ^(.*\.htm)$ /fftempl/fftempl.cgi [PT,QSA]
+RewriteRule ^(.*\.htm)$ /fftempl/.fftempl.cgi [PT,QSA]
 ```
 
-If you don't understand what this means or if you don't use Apache 2: The idea is that all .htm file requests should be automatically rewritten from ``/some_dir/some_file.htm?some_parameter=some_value`` to ``/fftempl/fftempl.cgi?fftempl_htm_file=/some_dir/some_file.htm&some_parameter=some_value``.
+If you don't understand what this means or if you don't use Apache 2: The idea is that all .htm file requests should be automatically rewritten from ``/some_dir/some_file.htm?some_parameter=some_value`` to ``/fftempl/.fftempl.cgi?fftempl_htm_file=/some_dir/some_file.htm&some_parameter=some_value``.
 
 If subsequent visit of page ``some_random_nonexistent_name.htm`` (must end with ".htm"!) on your webserver displays FFTempl error message, congratulations! FFTempl is installed and you can start using it.
 
@@ -101,13 +101,13 @@ Hello World webpage
 HELLO WORLD!
 ```
 
-As a next step, FFTempl loads the relevant template file. The template file is usually "fftempl/default.tpl" but this can be overriden.
+As a next step, FFTempl loads the relevant template file. The template file is usually ".fftempl/default.tpl" but this can be overriden.
 
 The template files look almost like a HTML page. What FFTempl does now is that it takes the template and replaces all occurences of string "((paramname))" with the contents of parameter called paramname (from the original ".htm" source file). If the template file contains parameter which does not exist in the source file, it's silently discarded from the result.
 
 We now have something that resembles HTML page (let's call it "intermediate page") but we are not done yet.
 
-Now we load the relevant tag file from the disk. As was the case with the template file, tag file can be overriden on a file-by-file basis using the LuaJIT variable FFTEMPL.tags_filename but if it's not present, "fftempl/default.tag" file is used by default.
+Now we load the relevant tag file from the disk. As was the case with the template file, tag file can be overriden on a file-by-file basis using the LuaJIT variable FFTEMPL.tags_filename but if it's not present, ".fftempl/default.tag" file is used by default.
 
 The tag file consists of lines which have the following format:
 
