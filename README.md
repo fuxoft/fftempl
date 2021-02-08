@@ -2,7 +2,7 @@
 
 Extremely simple but extremely powerful website templating and server side scripting using LuaJIT and anything else you like (used on www.fuxoft.cz).
 
-Documentation version: [[*<= Version '2.1.2+D20210208T210219' =>*]]
+Documentation version: [[*<= Version '2.1.3+D20210208T211027' =>*]]
 
 Warning: If you are not already familiar with Lua language and/or if you don't run your own HTTP server on your own machine, it's highly unlikely you'll find FFTempl useful in any way.
 
@@ -43,7 +43,7 @@ FFTempl does not "hold you by the hand". With great power comes great responsibi
 
 Installing FFTempl on your server requires a working webserver (preferably Apache), LuaJIT scripting language and nothing else. No database, no PHP, no Java, no other libraries, nothing. Actually, it also requires small but specific tweaking of your webserver configuration. If your pages are hosted on some basic free webhosting service, you probably won't be able to run FFTempl at all.
 
-First, download the latest version of FFTempl and put all the files into the directory called "fftempl" which should reside in your document root.
+First, download the latest version of FFTempl and put all the files into the directory called ".fftempl" which should reside in your document root.
 
 Check that you have LuaJIT installed (command ``luajit`` should work).
 
@@ -70,13 +70,13 @@ If you don't understand what this means or if you don't use Apache 2: The idea i
 
 If subsequent visit of page ``some_random_nonexistent_name.htm`` (must end with ".htm"!) on your webserver displays FFTempl error message, congratulations! FFTempl is installed and you can start using it.
 
-For increased security, you can change the name of the directory from "fftempl" to "superSecretFFTemplDirectory", for example (and change the redirection rule accordingly). You don't have to change anything else. FFTempl just expects to find the document root exactly one directory level above itself.
+For increased security, you can change the name of the directory from ".fftempl" to "superSecretFFTemplDirectory", for example (and change the redirection rule accordingly). You don't have to change anything else. FFTempl just expects to find the document root exactly one directory level above itself.
 
 ## Basic Terminology
 
 Each page FFTempl generates is created from its source file, template file and tag file.
 
-Source files contain the actual dynamic content of the page. Source files have the ".htm" extension and can be located anywhere on your website (even inside the "fftempl" directory!). Source files can also contain page-specific Lua scripts which are to be executed.
+Source files contain the actual dynamic content of the page. Source files have the ".htm" extension and can be located anywhere on your website (even inside the ".fftempl" directory!). Source files can also contain page-specific Lua scripts which are to be executed.
 
 Template files define the basic rules of transforming the source files into something that almost resembles HTML. They use the ".tpl" extension and are located inside the "fftempl" directory. The template files usually define the pages' colors, fonts and other common elements like header and footer (but can also define anything else). Many different source files can use the same template file and there can be any number of different template files, each for different part of your site.
 
@@ -88,7 +88,7 @@ Tag files define your own (pseudo)HTML tags. Basically, it defines which sequenc
 </center>
 ```
 
-This replacement will happen each time the tag ``{crazy_divider}`` appears in your source or template file. Tag files use the ".tag" extension and are all stored in the "fftempl" directory. As with template files, many different source files can use the same tag file and there can be any number of different tag files for different parts of your site.
+This replacement will happen each time the tag ``{crazy_divider}`` appears in your source or template file. Tag files use the ".tag" extension and are all stored in the ".fftempl" directory. As with template files, many different source files can use the same tag file and there can be any number of different tag files for different parts of your site.
 
 ## How does it work
 
