@@ -5,7 +5,7 @@ _G.FFTEMPL = {version = {}, debug = {log={}}}
 --FFTempl
 --by Frantisek Fuka
 --This is FFTempl loader which must never fail
-_G.FFTEMPL.version.loader = string.match([[*<= Version '20180919a' =>*]], "'(.+)'")
+_G.FFTEMPL.version.loader = string.match([[*<= Version '2.1.2+D20210402T174732' =>*]], "'(.+)'")
 
 function FFTEMPL.log(str)
 	table.insert(FFTEMPL.debug.log, tostring(str))
@@ -54,6 +54,9 @@ local function fftempl_main()
 	else
 		print("Status: "..result.http_status_code)
 		print("Content-type: "..result.content_type)
+		if result.extra_headers then
+			print(tostring(result.extra_headers))
+		end
 		print()
 		if FFTEMPL.args.fftempl_debug=='messages' then --if the URL contains parameter "fftempl_debug=messages"
 			print(table.concat(FFTEMPL.debug.log,"<p>\n"))

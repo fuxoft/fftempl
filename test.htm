@@ -1,5 +1,5 @@
 --LUASCRIPT
-
+math.randomseed(os.time())
 local result = {}
 local function prt(str)
 	table.insert(result, str.."\n")
@@ -29,6 +29,9 @@ prt(exe("sudo whoami"))
 prt(exe("pwd"))
 prt(exe("ls -al"))
 prt(exe("export"))
+local cookie = "c"..math.random(999999)
+prt("set cookies = "..cookie)
+FFTEMPL.extra_headers = "Set-Cookie: cookie="..cookie.."\nSet-Cookie: cookie2="..cookie.."_2"
 
 FFTEMPL.add_dumb_tag("CONTENT", table.concat(result))
 --/LUASCRIPT

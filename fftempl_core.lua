@@ -1,7 +1,7 @@
 --FFTEMPL
 --fuka@fuxoft.cz
 
-_G.FFTEMPL.version.core = string.match([[*<= Version '2.1.8+D20201213T102920' =>*]], "'.+'")
+_G.FFTEMPL.version.core = string.match([[*<= Version '2.1.9+D20210402T174600' =>*]], "'.+'")
 
 --[[
 Available hooks (called in this order):
@@ -13,6 +13,7 @@ variables:
 	FFTEMPL.args - Table of parsed GET arguments. Very basic functionality. No fancy parsing / un-escaping is taking place.
 	FFTEMPL.custom_dir - The full filesystem path (with ending slash) to the directory (relative to website root) where "default.tag", "default.tmp" and "custom.lua" script files are kept. READONLY - DO NOT MODIFY. Equal to FFTEMPL.document_root .. "/.fftempl/"
 	FFTEMPL.document_root - contains the document root, e.g. "/user/ada/www/myweb.com" - WITHOUT the ending forward slash
+	FFTEMPL.extra_headers - Contains extra headers (a single string without the trailing \n) e.g. for setting cookies
 	FFTEMPL.fftempl_dir - Where fftempl app files reside (absolute path, readonly), ends with "/"
 	FFTEMPL.htm_dir - Full path (on disk) to the directory of the currently executing HTM file. Ends with "/"
 	FFTEMPL.htm_file - Name of the currently executing HTM file (without directory name)
@@ -256,6 +257,7 @@ local function main()
 	local result = {html = FFTEMPL.html}
 	result.http_status_code = assert(FFTEMPL.http_status_code)
 	result.content_type = assert(FFTEMPL.content_type)
+	result.extra_headers = FFTEMPL.extra_headers
 	return result
 end
 
